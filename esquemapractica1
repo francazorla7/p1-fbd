@@ -1,0 +1,75 @@
+vehiculo:
+
+	matricula (clave primaria),
+	marca,
+	numero_de_bastidor (clave secundaria),
+	modelo,
+	color,
+	fecha_matriculacion,
+	fecha_ultima_itv,
+	dni_propietario,
+	dni_conductor_habitual
+
+persona:
+
+	dni (clave primaria),
+	nombre,
+	apellidos,
+	codigo_postal,
+	localidad,
+	telefono (clave secundaria),
+	mail (nullable)
+
+
+conductor:
+
+	dni (clave primaria),
+	nombre,
+	apellidos,
+	codigo_postal,
+	localidad,
+	telefono (clave secundaria),
+	mail (nullable),
+	tipo_de_carnet,
+	fecha_de_emision,
+	edad (>18)
+
+conductor_vehiculo:					# relacion entre conductor y vehiculo m : n
+
+	dni,
+	matricula
+
+
+radar:
+
+	carretera (clave primaria),
+	sentido (clave secundaria),
+	punto_kilometrico (clave secundaria)
+
+
+observacion:
+
+	matricula (clave primaria),
+	radar (clave primaria),
+	fecha (clave primaria),
+	hora (clave primaria),
+	velocidad
+
+
+sancion:
+
+	dueno_del_vehiculo (clave primaria),
+	fecha_de_envio (clave primaria),
+	cuantia,
+	fecha_maxima_de_pago,
+	forma_de_pago,					# transferencia bancaria, tarjeta de credito o en el banco
+	estado,							# registrada, emitida, recibida, abonada o no abonada
+
+
+alegacion:
+
+	sancion,
+	dni,							# identificación del conductor que debería ser multado en su lugar
+	fecha_de_registro,
+	estado,							# aprobada, rechazada o en estudio
+	fecha_de_ejecucion (nullable)
