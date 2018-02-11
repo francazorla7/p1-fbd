@@ -1,0 +1,11 @@
+Atributos
+- vehiculo:
+Creo que hay que poner propietario y conductor habitual en lugar de sus DNIs, y esto se convierten en claves ajenas de persona
+- persona:
+Te falta incluir fecha de nacimiento
+- conductor:
+Creo que se incluye en el atributo persona
+- radar:
+el sentido y el punto kilometrico creo que tb son primarias
+- sancion
+Creo que tienes que incluir en sancion la observacion, para ver el por qué de su sanción
