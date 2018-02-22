@@ -1,48 +1,55 @@
 vehiculo:
 
 	matricula (clave primaria),
-	marca,
+	marca (dominio reducido aunque volátil),
 	numero_de_bastidor (clave secundaria),
-	modelo,
+	modelo (dominio reducido aunque volátil),
 	color,
-	fecha_matriculacion,
+	fecha_matriculacion (clave secundaria),
 	fecha_ultima_itv,
-	dni_propietario,
+	dni_propietario     ->     persona.dni,
 	dni_conductor_habitual
+	
+// Si un vehículo se borra, se borrarán todas las observaciones registradas sobre el mismo que hayan sido tramitadas. 
+
 
 persona:
 
 	dni (clave primaria),
-	nombre,
-	apellidos,
-	codigo_postal,
+	nombre_y_apellidos,
+	direccion_postal,
 	localidad,
 	telefono (clave secundaria),
-	mail (nullable)
+	email (si lo facilitan),
+	fecha_de_nacimiento
 
 
 conductor:
 
 	dni (clave primaria),
-	nombre,
-	apellidos,
-	codigo_postal,
+	nombre_y_apellidos,
+	direccion_postal,
 	localidad,
 	telefono (clave secundaria),
-	mail (nullable),
+	email (si lo facilitan),
 	tipo_de_carnet,
 	fecha_de_emision,
-	edad (>18)
+	edad (mayor que 18)
+	
+// Relacion entre conductor y vehiculo M:N
 
-conductor_vehiculo:					# relacion entre conductor y vehiculo m : n
-
-	dni,
-	matricula
+carretera:
+	nombre (clave primaria),
+	velocidad_maxima_permitida
+	
+// también tendrá restricciones por tramos (siempre que existe una restricción sobre la velocidad
+// general, se sitúa un radar al inicio del tramo, y todos los tramos de velocidad
+// restringida miden 5 km. o hasta el siguiente radar si llega antes de 5 Km.)
 
 
 radar:
 
-	carretera (clave primaria),
+	nombre_de_carretera (clave primaria)     ->     carretera.nombre,
 	sentido (clave secundaria),
 	punto_kilometrico (clave secundaria)
 
@@ -50,26 +57,50 @@ radar:
 observacion:
 
 	matricula (clave primaria),
-	radar (clave primaria),
+	radar (clave primaria)     ->     radar.nombre_de_carretera,
 	fecha (clave primaria),
 	hora (clave primaria),
 	velocidad
 
+// Si se produce una observación que implica una infracción, el sistema generará
+// automáticamente una sanción, que será asignada provisionalmente al dueño del
+// vehículo. Por ejemplo, si la velocidad puntual es mayor de lo permitido, o si se 
+// dan dos observaciones del mismo vehículo en la misma carretera en dos puntos
+// kilométricos que distan más de lo que se puede recorrer legalmente en ese
+// tiempo, o simplemente si no se respeta la distancia de seguridad.
+// El importe de las sanciones de velocidad es de 10€ por cada Km/h que supere lo
+// permitido (redondea Km hacia arriba). La distancia de seguridad que se
+// considera mínima es de un metro por cada Km/h de velocidad puntual. Se
+// define lapso de seguridad al tiempo que precisa ese vehículo para recorrer esa
+// distancia (es decir, el lapso de tiempo entre dos vehículos cualesquiera tiene
+// que ser de 3,6 segundos). Se considera que ese vehículo no respeta la distancia
+// de seguridad si existe otra observación anterior del mismo radar en menos
+// tiempo que ese lapso. La sanción económica es de 10€ por cada décima de
+// segundo inferior al mínimo en ese lapso (redondeo a la cifra superior). 
+//
+// Al final de cada día, se recogen todas las sanciones observadas y se remiten al
+// dueño del vehículo para que sean abonadas. 
+
 
 sancion:
 
-	dueno_del_vehiculo (clave primaria),
+	dueno_del_vehiculo (clave primaria)     ->     persona.dni,
 	fecha_de_envio (clave primaria),
 	cuantia,
 	fecha_maxima_de_pago,
 	forma_de_pago,					# transferencia bancaria, tarjeta de credito o en el banco
+	penalizacion_aplicada,
 	estado,							# registrada, emitida, recibida, abonada o no abonada
 
+// no se si la clave primaria de la sancion esta bien
 
 alegacion:
 
-	sancion,
-	dni,							# identificación del conductor que debería ser multado en su lugar
+	sancion     ->     sancion.dueno_del_vehiculo & sancion.fecha_de_envio,
+	otro_dni,							# identificación del conductor que debería ser multado en su lugar
 	fecha_de_registro,
 	estado,							# aprobada, rechazada o en estudio
-	fecha_de_ejecucion (nullable)
+	fecha_de_ejecucion (en su caso)
+	
+// Si la alegación es aprobada, se actualizará el conductor de la sanción, y cambiará a su
+// estado a ‘Registrada’ para ser emitida al final de ese día. 
