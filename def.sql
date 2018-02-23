@@ -83,8 +83,8 @@ create table conductores_vehiculos
   dni varchar(9) not null,
   matricula varchar(7) not null,
   constraint conductores_vehiculos_PK primary key (dni, matricula),
-  constraint dni_conductores_vehiculos_FK foreign key (dni) references conductores(dni),
-  constraint matricula_conductores_vehiculos_FK foreign key (matricula) references vehiculos(matricula)
+  constraint dni_c_v_FK foreign key (dni) references conductores(dni),
+  constraint matricula_c_v_FK foreign key (matricula) references vehiculos(matricula)
 );
 
 
