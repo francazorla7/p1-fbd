@@ -68,10 +68,10 @@ create table vehiculos
 	fecha_ultima_itv date not null,
 	dni_propietario varchar(9) not null,
 	dni_conductor_habitual varchar(9) not null,
-  constraint color_FK foreign key (color) references colores(color),
-  constraint marca_FK foreign key (marca) references marcas(marca),
-  constraint modelo_FK foreign key (modelo) references modelos(modelo),
-  constraint dni_propietario_FK foreign key (dni_propietario) references personas(dni)
+  constraint color_vehiculos_FK foreign key (color) references colores(color),
+  constraint marca_vehiculos_FK foreign key (marca) references marcas(marca),
+  constraint modelo_vehiculos_FK foreign key (modelo) references modelos(modelo),
+  constraint dni_propietario_vehiculos_FK foreign key (dni_propietario) references personas(dni)
 );
 
 
@@ -83,8 +83,8 @@ create table conductores_vehiculos
   dni varchar(9) not null,
   matricula varchar(7) not null,
   constraint conductores_vehiculos_PK primary key (dni, matricula),
-  constraint dni_FK foreign key (dni) references conductores(dni),
-  constraint matricula_FK foreign key (matricula) references vehiculos(matricula)
+  constraint dni_conductores_vehiculos_FK foreign key (dni) references conductores(dni),
+  constraint matricula_conductores_vehiculos_FK foreign key (matricula) references vehiculos(matricula)
 );
 
 
@@ -101,7 +101,7 @@ create table radares
   sentido varchar(20) unique not null,
   punto_kilometrico number(6) unique not null,
   constraint radares_PK primary key (nombre_de_carretera, sentido, punto_kilometrico),
-  constraint carretera_FK foreign key (nombre_de_carretera) references carreteras(nombre)
+  constraint carretera_radares_FK foreign key (nombre_de_carretera) references carreteras(nombre)
 );
 
 create table observaciones
@@ -111,8 +111,8 @@ create table observaciones
   fecha_de_la_observacion date not null,
   velocidad_registrada number(6) not null,
   constraint observaciones_PK primary key (fecha_de_la_observacion, matricula_del_vehiculo),
-  constraint carretera_FK foreign key (carretera_del_radar) references radares(nombre_de_carretera),
-  constraint matricula_FK foreign key (matricula_del_vehiculo) references vehiculos(matricula)
+  constraint carretera_observaciones_FK foreign key (carretera_del_radar) references radares(nombre_de_carretera),
+  constraint matricula_observaciones_FK foreign key (matricula_del_vehiculo) references vehiculos(matricula)
 );
 
 
@@ -134,9 +134,9 @@ create table sanciones
   forma_de_pago varchar(20) not null,
   estado varchar(20) not null,
   constraint sanciones_PK primary key (dni_del_propietario, fecha_de_envio),
-  constraint dni_FK foreign key (dni_del_propietario) references personas(dni),
-  constraint forma_de_pago_FK foreign key (forma_de_pago) references formas_de_pago(forma_de_pago),
-  constraint estado_FK foreign key (estado) references estados_de_sancion(estado)
+  constraint dni_sanciones_FK foreign key (dni_del_propietario) references personas(dni),
+  constraint forma_de_pago_sanciones_FK foreign key (forma_de_pago) references formas_de_pago(forma_de_pago),
+  constraint estado_sanciones_FK foreign key (estado) references estados_de_sancion(estado)
 );
 
 create table estados_de_alegacion
@@ -151,5 +151,5 @@ create table alegaciones
   estado varchar(20) not null,
   fecha_de_ejecucion date,
   constraint alegaciones_PK primary key (dni_del_propietario, fecha_de_la_sancion), /* no puede haber mas de una alegacion por sancion */
-  constraint dni_FK foreign key (dni_del_propietario, fecha_de_la_sancion) references sanciones(dni_del_propietario, fecha_de_envio)
+  constraint dni_alegaciones_FK foreign key (dni_del_propietario, fecha_de_la_sancion) references sanciones(dni_del_propietario, fecha_de_envio)
 );
