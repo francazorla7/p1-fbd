@@ -9,8 +9,8 @@ vehiculo:
 	fecha_ultima_itv,
 	dni_propietario     ->     persona.dni,
 	dni_conductor_habitual
-	
-// Si un vehículo se borra, se borrarán todas las observaciones registradas sobre el mismo que hayan sido tramitadas. 
+
+// Si un vehículo se borra, se borrarán todas las observaciones registradas sobre el mismo que hayan sido tramitadas.
 
 
 persona:
@@ -32,16 +32,17 @@ conductor:
 	localidad,
 	telefono (clave secundaria),
 	email (si lo facilitan),
+	fecha_de_nacimiento,
 	tipo_de_carnet,
 	fecha_de_emision,
 	edad (mayor que 18)
-	
+
 // Relacion entre conductor y vehiculo M:N
 
 carretera:
 	nombre (clave primaria),
 	velocidad_maxima_permitida
-	
+
 // también tendrá restricciones por tramos (siempre que existe una restricción sobre la velocidad
 // general, se sitúa un radar al inicio del tramo, y todos los tramos de velocidad
 // restringida miden 5 km. o hasta el siguiente radar si llega antes de 5 Km.)
@@ -64,7 +65,7 @@ observacion:
 
 // Si se produce una observación que implica una infracción, el sistema generará
 // automáticamente una sanción, que será asignada provisionalmente al dueño del
-// vehículo. Por ejemplo, si la velocidad puntual es mayor de lo permitido, o si se 
+// vehículo. Por ejemplo, si la velocidad puntual es mayor de lo permitido, o si se
 // dan dos observaciones del mismo vehículo en la misma carretera en dos puntos
 // kilométricos que distan más de lo que se puede recorrer legalmente en ese
 // tiempo, o simplemente si no se respeta la distancia de seguridad.
@@ -76,10 +77,10 @@ observacion:
 // que ser de 3,6 segundos). Se considera que ese vehículo no respeta la distancia
 // de seguridad si existe otra observación anterior del mismo radar en menos
 // tiempo que ese lapso. La sanción económica es de 10€ por cada décima de
-// segundo inferior al mínimo en ese lapso (redondeo a la cifra superior). 
+// segundo inferior al mínimo en ese lapso (redondeo a la cifra superior).
 //
 // Al final de cada día, se recogen todas las sanciones observadas y se remiten al
-// dueño del vehículo para que sean abonadas. 
+// dueño del vehículo para que sean abonadas.
 
 
 sancion:
@@ -101,6 +102,6 @@ alegacion:
 	fecha_de_registro,
 	estado,							# aprobada, rechazada o en estudio
 	fecha_de_ejecucion (en su caso)
-	
+
 // Si la alegación es aprobada, se actualizará el conductor de la sanción, y cambiará a su
-// estado a ‘Registrada’ para ser emitida al final de ese día. 
+// estado a ‘Registrada’ para ser emitida al final de ese día.

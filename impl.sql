@@ -1,4 +1,4 @@
-drop table colores;
+/*drop table colores;
 drop table marcas;
 drop table modelos;
 drop table personas;
@@ -10,7 +10,7 @@ drop table observaciones;
 drop table sanciones;
 drop table formas_de_pago;
 drop table estados;
-
+*/
 
 
 create table colores
@@ -32,12 +32,11 @@ create table modelos
 create table personas
 (
 	dni varchar(9) primary key not null,
-	nombre varchar(20) not null,
-	apellidos varchar(30) not null,
-	codigo_postal number(6) not null,
+	nombre varchar(30) not null, /* nombre  y apellidos */
+	direccion_postal number(6) not null,
 	localidad varchar(20) not null,
-	telefono varchar(9) not null,
-  email varchar(20),
+	telefono varchar(9) not null, /* no unique porque se pueden registrar personas con el mismo email */
+  email varchar(20), /* no unique porque se pueden registrar personas con el mismo email */
   fecha_de_nacimiento date not null
 );
 
@@ -45,9 +44,8 @@ create table personas
 create table conductores
 (
   dni varchar(9) primary key not null,
-	nombre varchar(20) not null,
-	apellidos varchar(30) not null,
-	codigo_postal number(6) not null,
+	nombre varchar(30) not null, /* nombre  y apellidos */
+	direccion_postal number(6) not null,
   localidad varchar(20) not null,
 	telefono varchar(9) not null,
   email varchar(20),
@@ -66,6 +64,7 @@ create table vehiculos
 	modelo varchar(20) not null,
 	color varchar(20) not null,
 	fecha_matriculacion date not null,
+	fecha_ultima_itv date not null,
 	dni_propietario varchar(9) not null,
 	dni_conductor_habitual varchar(9) not null,
 
@@ -74,7 +73,6 @@ create table vehiculos
   foreign key (modelo) references modelos(modelo),
   foreign key (dni_propietario) references personas(dni)
 );
-
 
 
 
@@ -92,23 +90,35 @@ create table conductores_vehiculos
 );
 
 
+create table carreteras
+(
+  nombre varchar(20) primary key not null,
+  velocidad_maxima_permitida number(6) not null
+);
+
 
 create table radares
 (
-  carretera varchar(20) primary key not null,
+  nombre_de_carretera varchar(20) unique not null,
   sentido varchar(20) unique not null,
-  punto_kilometrico number(6) unique not null
+  punto_kilometrico number(6) unique not null,
+
+  primary key (nombre_de_carretera, sentido, punto_kilometrico),
+  foreign key (nombre_de_carretera) references carreteras(nombre)
 );
 
 create table observaciones
 (
-  matricula varchar(7) not null,
+  matricula_del_vehiculo varchar(7) not null,
   carretera_del_radar varchar(20) not null,
-  fecha date not null, /* la fecha guarda fecha, hora, minuto y segundo */
-  velocidad float not null,
+  fecha_de_la_observacion date not null,
+  /* la fecha guarda fecha, hora, minuto y segundo */
+  velocidad_registrada number(6) not null,
 
-
-  primary key (fecha, matricula) /* no es posible que se den dos observaciones al mismo tiempo en distintos sitios del mismo coche */
+  primary key (fecha_de_la_observacion, matricula_del_vehiculo),
+  /* no es posible que se den dos observaciones al mismo tiempo en distintos sitios del mismo coche */
+  foreign key (carretera_del_radar) references radares(nombre_de_carretera),
+  foreign key (matricula_del_vehiculo) references vehiculos(matricula)
 );
 
 
@@ -117,7 +127,7 @@ create table formas_de_pago
   forma_de_pago varchar(20) not null primary key
 );
 
-create table estados
+create table estados_de_sancion
 (
   estado varchar(20) not null primary key
 );
@@ -135,5 +145,21 @@ create table sanciones
 
   foreign key (dni_del_propietario) references personas(dni),
   foreign key (forma_de_pago) references formas_de_pago(forma_de_pago),
-  foreign key (estado) references estados(estado)
+  foreign key (estado) references estados_de_sancion(estado)
+);
+
+create table estados_de_alegacion
+(
+  estado varchar(20) not null primary key
+);
+
+create table alegaciones
+(
+  dni_del_propietario varchar(9) not null,
+  fecha_de_la_sancion date not null,
+  estado varchar(20) not null,
+  fecha_de_ejecucion date,
+
+  primary key (dni_del_propietario, fecha_de_la_sancion), /* no puede haber mas de una alegacion por sancion */
+  foreign key (dni_del_propietario, fecha_de_la_sancion) references sanciones(dni_del_propietario, fecha_de_envio)
 );
