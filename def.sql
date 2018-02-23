@@ -1,18 +1,18 @@
-drop table colores;
-drop table marcas;
-drop table modelos;
-drop table personas;
-drop table conductores;
-drop table vehiculos;
-drop table conductores_vehiculos;
-drop table carreteras;
-drop table radares;
-drop table observaciones;
-drop table formas_de_pago;
-drop table estados_de_sancion;
-drop table sanciones;
-drop table estados_de_alegacion;
 drop table alegaciones;
+drop table estados_de_alegacion;
+drop table sanciones;
+drop table estados_de_sancion;
+drop table formas_de_pago;
+drop table observaciones;
+drop table radares;
+drop table carreteras;
+drop table conductores_vehiculos;
+drop table vehiculos;
+drop table conductores;
+drop table personas;
+drop table modelos;
+drop table marcas;
+drop table colores;
 
 create table colores
 (
